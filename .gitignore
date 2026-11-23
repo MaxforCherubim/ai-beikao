@@ -1,0 +1,22 @@
+# ===== 本地运行/个人数据（不进仓库）=====
+.notes*.json
+.progress*.json
+__pycache__/
+*.pyc
+
+# ===== 云端部署工具（55MB 二进制，仅本机隧道用）=====
+.tools-bin/
+
+# ===== 官方版权资料（军委大纲 PDF 与提取文本，严禁上传任何云端）=====
+data/raw/
+
+# ===== 密钥（如以后配置）=====
+.streamlit/secrets.toml
+
+# ===== 系统/编辑器杂项 =====
+.DS_Store
+Thumbs.db
+*.log
+
+# 第三方 skill（从 streamlit 包复制，非项目内容）
+.zcode/skills/streamlit-app/
