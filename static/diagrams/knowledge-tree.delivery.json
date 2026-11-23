@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "57bdae96-ea7c-4599-a97a-bbac11fa0051",
+  "status": "current",
+  "command": "deliver",
+  "type": "tree",
+  "input": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\.archify\\tree-candidate.json",
+  "output": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\knowledge-tree.html",
+  "specification": {
+    "sha256": "a4d5c231d684a82f2deca3052a6c979ee7662b08fc69d1a2a6822132acf637a6",
+    "bytes": 6053
+  },
+  "artifact": {
+    "sha256": "aa1ac1bb91485257fa8683c739bd7b971283c3b2b3036d5bfa3ec128cf895b3f",
+    "bytes": 971592
+  }
+}

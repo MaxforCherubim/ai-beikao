@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "5089c6bd-fd3f-4942-8865-e57fa9ef6faa",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\.archify\\bidding-candidate.json",
+  "output": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+  "specification": {
+    "sha256": "9b8e3e16fb88d4b7d3a1954f11dbacd596698c205fe93890724d6749506ea126",
+    "bytes": 2513
+  },
+  "artifact": {
+    "sha256": "329f8da2c2ab1b4f3fcc86fe27bd9c1ceb893b7cfa61e48ebeb83cc59bf07a3f",
+    "bytes": 921784
+  }
+}

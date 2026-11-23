@@ -23,6 +23,18 @@ st.set_page_config(page_title="经济法备考助手", page_icon="⚖️", layou
 EXAM_DATE = date(2026, 12, 13)
 USER = "考生"  # 单一身份：本地与云端访客共用同一套笔记/进度
 
+# archify 生成的交互式图解：知识点 id → 图解文件（static/diagrams/）
+DIAGRAMS = {
+    "zbtb-001": ("bidding-workflow.html", "本章导览：招标投标全流程"),
+    "ht-001": ("contract-lifecycle.html", "本章导览：合同的一生"),
+    "pj-001": ("note-sequence.html", "本章导览：票据流转与追索"),
+}
+
+
+def render_diagram(filename: str, caption: str) -> None:
+    with st.expander(f"🗺️ {caption}（点击展开交互式图解）", expanded=True):
+        st.iframe(f"/app/static/diagrams/{filename}", height=560)
+
 
 # ---------- 渲染辅助 ----------
 
@@ -234,6 +246,9 @@ def render_point(pid: str) -> None:
         st.caption(f"{_short_chapter(p['chapter'])} › {_short_section(p['section'])}")
         st.title(f"{p['title']}　{status_badge(USER, pid)}")
 
+        if pid in DIAGRAMS:
+            render_diagram(*DIAGRAMS[pid])
+
         with st.expander("📜 法条原文（先理解逻辑，再回看原文；赶进度可跳过）", expanded=False):
             st.markdown(quote_block(p["original"]))
 
@@ -365,6 +380,9 @@ def welcome() -> None:
     )
 
     st.markdown("---")
+    with st.expander("🗺️ 经济法知识体系全景（交互式，点击章节可展开）", expanded=True):
+        st.iframe("/app/static/diagrams/knowledge-tree.html", height=600)
+
     st.caption("由 [MaxforCherubim](https://github.com/MaxforCherubim) 制作 · 本应用基于 [Streamlit](https://streamlit.io) 构建")
 
 

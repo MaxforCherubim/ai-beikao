@@ -1,0 +1,425 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "workflow",
+  "quality": "standard",
+  "startedAt": "2026-11-23T15:30:26.177Z",
+  "specification": {
+    "path": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\.archify\\bidding-candidate.json",
+    "sha256": "2334427c0e42bad0bb18b4c3d2941a0e6f3c4a4698b63789125474cfe8f09dcd",
+    "bytes": 2463
+  },
+  "artifact": {
+    "path": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+    "sha256": "e67eecb3440bd752395f38d3595e446fa45f1019950133dd2ffd52936ed2e5de",
+    "bytes": 921783
+  },
+  "stages": {
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "C:\\Users\\bay23\\scoop\\apps\\nodejs22\\current\\node.exe",
+        "C:\\Users\\bay23\\.zcode\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "workflow",
+        "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\.archify\\bidding-candidate.json",
+        "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+        "--quality",
+        "standard",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "2334427c0e42bad0bb18b4c3d2941a0e6f3c4a4698b63789125474cfe8f09dcd",
+          "bytes": 2463
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "standard",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 1,
+          "compositionIssues": [
+            {
+              "severity": "warning",
+              "code": "composition/viewport-height",
+              "readerFit": null,
+              "viewBoxWidth": 720,
+              "viewBoxHeight": 528,
+              "viewportWidth": 1440,
+              "viewportHeight": 900,
+              "ratio": 1.36,
+              "wideRatio": 1.55,
+              "svgWidthPx": 1346,
+              "svgHeightPx": 987,
+              "fixedChromePx": 126,
+              "pageHeightPx": 1113,
+              "overflowPx": 213,
+              "detail": "[composition/viewport-height] Preserve every node, relationship, and label. This 720x528 canvas (ratio 1.36) declares no intrinsic-height fit and is below the 1.55 wide ratio, so the desktop Reader can neither narrow it nor accept vertical scroll: it renders 987px tall at the full 1346px width and the page reaches 1113px before cards against 900px, a certain visual-check failure. Either compact vertical spacing so meta.viewBox height is at most 464 at this width, or spread content sideways so the width is at least 819 at this height; for architecture and readable-v2 workflow, omitting meta.viewBox lets the renderer size the canvas and declare the fit."
+            }
+          ]
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 1032,
+      "command": [
+        "C:\\Users\\bay23\\scoop\\apps\\nodejs22\\current\\node.exe",
+        "C:\\Users\\bay23\\.zcode\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "workflow",
+        "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\.archify\\bidding-candidate.json",
+        "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+        "--quality",
+        "standard",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "d9b53d95-deae-4e6b-9627-d9ed296a861e",
+        "ok": true,
+        "command": "deliver",
+        "type": "workflow",
+        "input": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\.archify\\bidding-candidate.json",
+        "output": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+        "specification": {
+          "sha256": "2334427c0e42bad0bb18b4c3d2941a0e6f3c4a4698b63789125474cfe8f09dcd",
+          "bytes": 2463
+        },
+        "artifact": {
+          "sha256": "e67eecb3440bd752395f38d3595e446fa45f1019950133dd2ffd52936ed2e5de",
+          "bytes": 921783
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "standard",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 1,
+          "compositionIssues": [
+            {
+              "severity": "warning",
+              "code": "composition/viewport-height",
+              "readerFit": null,
+              "viewBoxWidth": 720,
+              "viewBoxHeight": 528,
+              "viewportWidth": 1440,
+              "viewportHeight": 900,
+              "ratio": 1.36,
+              "wideRatio": 1.55,
+              "svgWidthPx": 1346,
+              "svgHeightPx": 987,
+              "fixedChromePx": 126,
+              "pageHeightPx": 1113,
+              "overflowPx": 213,
+              "detail": "[composition/viewport-height] Preserve every node, relationship, and label. This 720x528 canvas (ratio 1.36) declares no intrinsic-height fit and is below the 1.55 wide ratio, so the desktop Reader can neither narrow it nor accept vertical scroll: it renders 987px tall at the full 1346px width and the page reaches 1113px before cards against 900px, a certain visual-check failure. Either compact vertical spacing so meta.viewBox height is at most 464 at this width, or spread content sideways so the width is at least 819 at this height; for architecture and readable-v2 workflow, omitting meta.viewBox lets the renderer size the canvas and declare the fit."
+            }
+          ]
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 218,
+      "command": [
+        "C:\\Users\\bay23\\scoop\\apps\\nodejs22\\current\\node.exe",
+        "C:\\Users\\bay23\\.zcode\\skills\\archify\\bin\\archify.mjs",
+        "check",
+        "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+        "artifact": {
+          "sha256": "e67eecb3440bd752395f38d3595e446fa45f1019950133dd2ffd52936ed2e5de",
+          "bytes": 921783
+        },
+        "checks": [
+          {
+            "name": "single_svg",
+            "ok": true,
+            "details": [
+              "found 1 <svg> block(s)"
+            ]
+          },
+          {
+            "name": "finite_svg",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "orthogonal_arrows",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "label_route_clearance",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_crossings",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_corridors",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "container_border_runs",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "route_rhythm",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "legend_clearance",
+            "ok": true,
+            "details": []
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "standard",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 1
+          },
+          "metrics": {
+            "properCrossings": 0,
+            "resolvedCrossovers": 0,
+            "ambiguousCorridors": 0,
+            "arrowheadCollisions": 0,
+            "containerBorderRuns": 0,
+            "labelRouteClearanceIssues": 0,
+            "labelCanvasOverflowIssues": 0,
+            "minLabelRouteClearance": 55,
+            "desktopReadabilityIssues": 0,
+            "viewportHeightIssues": 1,
+            "minProjectedNodeTextPx": 6,
+            "maxBends": 1,
+            "routesOverSuggestedBends": 0,
+            "maxStretch": 1,
+            "routesOverSuggestedStretch": 0,
+            "minSegmentPx": 24,
+            "minInteriorSegmentPx": null,
+            "shortSegmentCount": 0,
+            "shortEndpointSegmentCount": 0,
+            "shortInteriorSegmentCount": 0,
+            "microSegmentCount": 0
+          },
+          "suggestedLimits": {
+            "bendsPerRelationship": 2,
+            "stretch": 1.35,
+            "segmentPx": 16,
+            "microSegmentPx": 8
+          },
+          "routeReview": {
+            "crossings": [],
+            "detours": []
+          },
+          "leadingSpace": {
+            "measured": false,
+            "reviewSuggested": false
+          },
+          "desktopReadability": {
+            "budgetBasis": "legacy-930",
+            "readerContract": "declared-wide-v1",
+            "availableDiagramWidth": 930,
+            "actualBudgetPx": 930,
+            "limit": "legacy",
+            "requestedTargetPx": null,
+            "requestedTargetMet": null,
+            "hardFloorPx": 6,
+            "hardFloorMet": true,
+            "minimumOwner": {
+              "kind": "node",
+              "id": "n5"
+            },
+            "minimumSourceTextPx": 6,
+            "minimumProjectedTextPx": 6,
+            "semanticTextCount": 15
+          },
+          "issues": [
+            {
+              "severity": "warning",
+              "code": "composition/viewport-height",
+              "readerFit": null,
+              "viewBoxWidth": 720,
+              "viewBoxHeight": 528,
+              "viewportWidth": 1440,
+              "viewportHeight": 900,
+              "ratio": 1.36,
+              "wideRatio": 1.55,
+              "svgWidthPx": 1346,
+              "svgHeightPx": 987,
+              "fixedChromePx": 126,
+              "pageHeightPx": 1113,
+              "overflowPx": 213,
+              "detail": "[composition/viewport-height] Preserve every node, relationship, and label. This 720x528 canvas (ratio 1.36) declares no intrinsic-height fit and is below the 1.55 wide ratio, so the desktop Reader can neither narrow it nor accept vertical scroll: it renders 987px tall at the full 1346px width and the page reaches 1113px before cards against 900px, a certain visual-check failure. Either compact vertical spacing so meta.viewBox height is at most 464 at this width, or spread content sideways so the width is at least 819 at this height; for architecture and readable-v2 workflow, omitting meta.viewBox lets the renderer size the canvas and declare the fit."
+            }
+          ]
+        },
+        "provenance": "current",
+        "deliveryReceiptId": "d9b53d95-deae-4e6b-9627-d9ed296a861e"
+      }
+    },
+    "browser-check": {
+      "status": "fail",
+      "exitCode": 1,
+      "durationMs": 45,
+      "command": [
+        "C:\\Users\\bay23\\scoop\\apps\\nodejs22\\current\\node.exe",
+        "C:\\Users\\bay23\\.zcode\\skills\\archify\\bin\\archify.mjs",
+        "browser-check",
+        "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+        "--json",
+        "--require-provenance"
+      ],
+      "execution": "in-process",
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": false,
+        "command": "browser-check",
+        "evidenceKind": "automated-browser",
+        "status": "fail",
+        "visualReview": "not-requested",
+        "provenance": "current",
+        "deliveryReceiptId": "d9b53d95-deae-4e6b-9627-d9ed296a861e",
+        "artifact": {
+          "path": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+          "sha256": "e67eecb3440bd752395f38d3595e446fa45f1019950133dd2ffd52936ed2e5de",
+          "bytes": 921783
+        },
+        "state": {
+          "detail": "read",
+          "motion": "still"
+        },
+        "chrome": {
+          "status": "not-checked",
+          "executable": null
+        },
+        "diagnostics": [
+          {
+            "code": "viewer/evidence-path-conflict",
+            "severity": "error",
+            "message": "browser-check will not replace the existing unowned evidence path \"C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.browser-check.json\".",
+            "subject": {
+              "artifact": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+              "evidencePath": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.browser-check.json"
+            },
+            "evidence": {
+              "reason": {
+                "code": "ownership-artifact-mismatch"
+              }
+            },
+            "supportedFixes": [
+              "move the conflicting file aside, or choose a separate --out-dir, then rerun browser-check"
+            ]
+          }
+        ],
+        "containment": {
+          "status": "fail",
+          "policy": "fit-or-reader-declared-readable-vertical-scroll",
+          "viewports": []
+        },
+        "themeStates": {
+          "status": "fail",
+          "viewports": []
+        },
+        "readability": {
+          "status": "fail",
+          "minimumProjectedNodeTextPx": 6,
+          "viewports": []
+        },
+        "viewerChrome": {
+          "status": "fail",
+          "viewports": []
+        },
+        "captures": {
+          "status": "not-requested",
+          "screenshots": [],
+          "contactSheet": null
+        },
+        "sidecars": {
+          "receipt": "bidding-workflow.browser-check.json",
+          "files": []
+        },
+        "error": "browser-check will not replace the existing unowned evidence path \"C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.browser-check.json\"."
+      }
+    }
+  },
+  "browserCheck": {
+    "requested": true,
+    "ran": false
+  },
+  "diagnostics": [
+    {
+      "code": "viewer/evidence-path-conflict",
+      "severity": "error",
+      "message": "browser-check will not replace the existing unowned evidence path \"C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.browser-check.json\".",
+      "subject": {
+        "artifact": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.html",
+        "evidencePath": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.browser-check.json"
+      },
+      "evidence": {
+        "reason": {
+          "code": "ownership-artifact-mismatch"
+        }
+      },
+      "supportedFixes": [
+        "move the conflicting file aside, or choose a separate --out-dir, then rerun browser-check"
+      ]
+    }
+  ],
+  "evidence": {
+    "receipt": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.finalize.json",
+    "summaryReceipt": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.finalize-summary.json",
+    "browserCheckReceipt": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\bidding-workflow.browser-check.json"
+  },
+  "visualReview": "not-requested",
+  "failedStage": "browser-check",
+  "finishedAt": "2026-11-23T15:30:28.305Z",
+  "durationMs": 2128,
+  "update": {
+    "status": "current",
+    "installedVersion": "3.3.0",
+    "availableVersion": "3.3.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-23T15:16:40.071Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  }
+}

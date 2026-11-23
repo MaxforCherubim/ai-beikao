@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "95a72aac-4ab1-4f98-bcf9-5f37751423d5",
+  "status": "current",
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\.archify\\contract-candidate.json",
+  "output": "C:\\Users\\bay23\\Downloads\\BaiduSyncdisk\\Projects\\AI备考辅助学习\\static\\diagrams\\contract-lifecycle.html",
+  "specification": {
+    "sha256": "a7e3f0754435edb90fa74ffab57772d319a93f4972b622ca54d6257c6bdf9d54",
+    "bytes": 3352
+  },
+  "artifact": {
+    "sha256": "61a467946ff3a14294cba6ae8fed1f9e875f595e079845c1410f344d95a971a1",
+    "bytes": 930847
+  }
+}

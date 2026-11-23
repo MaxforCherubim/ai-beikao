@@ -20,3 +20,6 @@ Thumbs.db
 
 # 第三方 skill（从 streamlit 包复制，非项目内容）
 .zcode/skills/streamlit-app/
+
+# archify 构建中间产物
+.archify/
