@@ -1,0 +1,22 @@
+id: hg-007
+kind: fused
+subject: 经济学
+part: 第二篇宏观经济学
+chapter: 第三章产品市场和货币市场的一般均衡
+section: ""
+node: 三、IS-LM 分析
+title: IS-LM 分析
+content: |
+  - **IS-LM分析**
+    - **两个市场同时均衡的利率和收入**
+      - 产品市场与货币市场的均衡状态：IS曲线与LM曲线的交点
+    - **IS-LM模型的非均衡状态**
+      - IS曲线右上方——s>i；IS曲线左下方——s<i
+      - LM曲线左上方——M>L；LM曲线右下方——M<L
+      - 四象限组合（财经必背考点原表照录）：i＜s,L＜m；i＞s,L＞m；i＞s,L＜m；i＜s,L＞m
+    - **均衡收入和利率的变动**
+sources:
+  - 经济学-专业教材.pdf p.3
+  - 经济学-基础框架.pdf p.3
+  - 经济学-财经必背考点.pdf p.8
+  - 官方大纲 2023-08

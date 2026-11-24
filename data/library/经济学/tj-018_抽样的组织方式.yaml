@@ -1,0 +1,16 @@
+id: tj-018
+kind: fused
+subject: 经济学
+part: 第三篇统计学
+chapter: 第六章抽样推断
+section: ""
+node: 二、抽样的组织方式
+title: 抽样的组织方式
+content: |
+  - **简单随机抽样**
+  - **类型抽样**
+  - **机械抽样（等距抽样）**
+  - **整群抽样**
+  - **多阶段抽样**
+sources:
+  - 经济学-专业教材.pdf p.11

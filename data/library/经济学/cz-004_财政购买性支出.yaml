@@ -1,0 +1,15 @@
+id: cz-004
+kind: fused
+subject: 经济学
+part: 第一篇财政学
+chapter: 第二章财政支出理论
+section: ""
+node: 二、财政购买性支出
+title: 财政购买性支出
+content: |
+  - **购买性支出的概念和特点**
+    - 政府购买性支出的含义。
+  - **购买性支出的内容**
+    - 政府购买性支出的构成。
+sources:
+  - 经济学-专业教材.pdf p.7

@@ -1,0 +1,14 @@
+id: gk-025
+kind: fused
+subject: 公共科目
+part: 第一部分基本知识
+chapter: 第二章人文与社会
+section: 第三节思想道德
+node: 一、人生观
+title: 人生观
+content: |
+  - 人的本质
+  - 人生观的主要内容
+  - 人生观与世界观、价值观
+sources:
+  - 官方大纲 2023-08

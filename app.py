@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parent
 from core import data as dmod
 from core import notes as nmod
 from core import progress as pmod
+from core import tree_svg
 
 st.set_page_config(page_title="军队文职备考助手", page_icon="🎖️", layout="wide")
 
@@ -206,19 +207,22 @@ def sidebar() -> None:
         outline = dmod.load_outline()
         for subj in outline["subjects"]:
             st.markdown(f"#### {subj['title']}（{subj['count']}）")
-            for ch in subj["chapters"]:
-                with st.expander(f"{_short_chapter(ch['title'])}（{ch['count']}）"):
-                    for sec in ch["sections"]:
-                        st.caption(f"**{sec['title']}**")
-                        for pid in sec["points"]:
-                            p = dmod.get_point(pid)
-                            if st.button(
-                                f"{p['title']}　{status_badge(USER, pid)}{_note_mark(USER, pid)}",
-                                key=f"tree-{pid}",
-                                use_container_width=True,
-                            ):
-                                st.query_params["p"] = pid
-                                st.rerun()
+            for part in subj["parts"]:
+                st.caption(f"**{part['title']}**")
+                for ch in part["chapters"]:
+                    with st.expander(f"{_short_chapter(ch['title'])}（{ch['count']}）"):
+                        for sec in ch["sections"]:
+                            if sec["title"]:
+                                st.caption(f"**{sec['title']}**")
+                            for pid in sec["points"]:
+                                p = dmod.get_point(pid)
+                                if st.button(
+                                    f"{p['title']}　{status_badge(USER, pid)}{_note_mark(USER, pid)}",
+                                    key=f"tree-{pid}",
+                                    use_container_width=True,
+                                ):
+                                    st.query_params["p"] = pid
+                                    st.rerun()
 
         if st.button("🔄 重新加载数据（改了 YAML 后点这里）"):
             dmod.clear_cache()
@@ -235,10 +239,22 @@ def render_point(pid: str) -> None:
     left, right = st.columns([0.72, 0.28], gap="large")
 
     with left:
-        st.caption(f"{p['subject']} › {_short_chapter(p['chapter'])} › {_short_section(p['section'])}")
+        if p.get("kind") == "fused":
+            crumb = f"{p['subject']} › {p['part']} · {_short_chapter(p['chapter'])}"
+            if p.get("section"):
+                crumb += f" › {_short_section(p['section'])}"
+        else:
+            crumb = f"{p['subject']} › {_short_chapter(p['chapter'])} › {_short_section(p['section'])}"
+        st.caption(crumb)
         st.title(f"{p['title']}　{status_badge(USER, pid)}")
 
-        if p.get("kind") == "auto":
+        if p.get("kind") == "fused":
+            # 融合知识点：思维导图（自绘 SVG）为主视图，文字版折叠备查
+            st.markdown(tree_svg.render_svg(p.get("content", "")), unsafe_allow_html=True)
+            with st.expander("📄 文字版（检索/复制用）", expanded=False):
+                st.markdown(p.get("content", ""))
+            st.caption("📖 来源：" + "；".join(p.get("sources", [])))
+        elif p.get("kind") == "auto":
             # 讲义速览：正文即讲义原文（含解释与例题），忠于源 PDF
             st.markdown(p.get("content", ""))
             st.caption(f"📖 讲义原文：{p.get('source', '')}（完整排版见 data/知识点/ 对应 PDF）")
@@ -294,7 +310,9 @@ def render_point(pid: str) -> None:
                                  use_container_width=True):
             st.query_params["p"] = next_id
             st.rerun()
-        if p.get("kind") == "auto":
+        if p.get("kind") == "fused":
+            st.caption("学习法：看导图 🗺️ → 文字版抠细节 📄 → 刷题库 PDF（data/题库/）→ 笔记 🗒️")
+        elif p.get("kind") == "auto":
             st.caption("学习法：读讲义 📖 → 刷题库 PDF（data/题库/）→ 笔记 🗒️")
         else:
             st.caption("学习法：先理解 💡 → 看案例 🌏 → 做题 📝 → 有空再读原文 📜")
@@ -317,29 +335,31 @@ def welcome() -> None:
 
     st.markdown(
         """
-**怎么用**：左侧按「科目 → 章 → 节」进入知识点，两类内容：
-精写知识点（经济法六件套：💡 为什么这么写 → 🏷️ 名词由来 → 🌏 案例 → ⚡ 考点提示 → 📝 练一练，
-吃不准再展开 📜 法条原文）；讲义速览（📖 公共科目与经济学讲义原文，含解释与例题）。
+**怎么用**：左侧按官方大纲「科目 → 部分 → 章」进入知识点，两类内容：
+融合知识点（🗺️ 思维导图为主视图——多本讲义按官方测查点去重融合而成，
+📄 文字版折叠备查，来源页码可溯）；精写知识点（经济法六件套：💡 为什么这么写 → 🏷️ 名词由来 →
+🌏 案例 → ⚡ 考点提示 → 📝 练一练，吃不准再展开 📜 法条原文）。
 学完点 ✅ 已掌握（吃不准的点 🔁 待复习），重要内容写进右栏笔记。
 刷题用 data/题库/ 下的 PDF（按年份分真题/模拟题），在 reMarkable 上做。
 
-**范围**：军队文职笔试全内容——公共科目（基本知识·法律国防和军队·岗位能力）+
-专业科目《经济学》（经济学/财政学/金融学/统计学/经济法）。
+**范围**：军队文职笔试官方大纲全内容——公共科目（基本知识·岗位能力）+
+专业科目《经济学》（微观/宏观/经济法/财政学/金融/统计）。
 """
     )
-    st.caption("数据依据：官方考试大纲（2023-08，军队人才网）+ 备考讲义（data/知识点/，登记表见其 README）")
+    st.caption("数据依据：官方考试大纲（2023-08，军队人才网）+ 备考讲义融合（data/知识点/，登记表见其 README）")
 
     st.markdown("### 各章进度")
     for subj in outline["subjects"]:
         st.markdown(f"**{subj['title']}**")
         rows = ["| 章 | 知识点 | 已掌握 | 待复习 |", "|---|---|---|---|"]
-        for ch in subj["chapters"]:
-            pids = [pid for sec in ch["sections"] for pid in sec["points"]]
-            rows.append(
-                f"| {ch['title']} | {len(pids)} "
-                f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'mastered')} "
-                f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'review')} |"
-            )
+        for part in subj["parts"]:
+            for ch in part["chapters"]:
+                pids = [pid for sec in ch["sections"] for pid in sec["points"]]
+                rows.append(
+                    f"| {part['title']}·{ch['title']} | {len(pids)} "
+                    f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'mastered')} "
+                    f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'review')} |"
+                )
         st.markdown("\n".join(rows))
 
     st.markdown("### 法条版本基准（经济法精写部分）")

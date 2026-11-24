@@ -46,12 +46,13 @@ def get_point(pid: str):
 
 
 def ordered_ids() -> list:
-    """按大纲树顺序返回全部知识点 id（用于上一处/下一处导航）。"""
+    """按大纲树顺序返回全部知识点 id（用于上一处/下一处导航）。outline v3：subjects→parts→chapters→sections。"""
     ids = []
     for subj in load_outline().get("subjects", []):
-        for ch in subj.get("chapters", []):
-            for sec in ch.get("sections", []):
-                ids.extend(sec.get("points", []))
+        for part in subj.get("parts", []):
+            for ch in part.get("chapters", []):
+                for sec in ch.get("sections", []):
+                    ids.extend(sec.get("points", []))
     return ids
 
 

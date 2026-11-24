@@ -20,6 +20,7 @@ LIBRARY_DIR = ROOT / "data" / "library"
 REQUIRED_FIELDS = ["id", "chapter", "section", "title", "keywords",
                    "original", "why_written", "name_origin", "examples", "exam_tips", "quiz"]
 AUTO_REQUIRED_FIELDS = ["id", "subject", "book", "chapter", "section", "title", "content", "source"]
+FUSED_REQUIRED_FIELDS = ["id", "subject", "part", "chapter", "node", "title", "content", "sources"]
 
 # 官方大纲经济法 6 章名 -> id 前缀（精写知识点）
 CHAPTER_PREFIX = {
@@ -33,6 +34,8 @@ CHAPTER_PREFIX = {
 
 # 自动结构化讲义的 id 前缀（book 目录 -> 前缀）
 AUTO_PREFIX = ("ff", "fl", "gw", "js", "jc", "kd", "cb", "jb")
+# 融合知识点（按官方大纲节点）的 id 前缀
+FUSED_PREFIX = ("gk", "gn", "wg", "hg", "cz", "jr", "tj")
 SUBJECTS = ("公共科目", "经济学")
 
 # 大纲节名 -> 排序序号（按官方大纲中"一、二、三…"顺序）
@@ -58,11 +61,24 @@ def run_checks() -> tuple:
             errors.append(f"{rel}: 顶层不是映射")
             continue
         d.setdefault("kind", "auto" if is_auto else "crafted")
-        if d["kind"] != ("auto" if is_auto else "crafted"):
-            errors.append(f"{rel}: kind 与所在目录不符（{d['kind']}）")
+        if is_auto and d["kind"] not in ("auto", "fused"):
+            errors.append(f"{rel}: library 下 kind 应为 auto/fused（{d['kind']}）")
+        if not is_auto and d["kind"] != "crafted":
+            errors.append(f"{rel}: points 下 kind 应为 crafted（{d['kind']}）")
         points.append((rel, d))
         pid = str(d.get("id", ""))
-        if is_auto:
+        if d["kind"] == "fused":
+            for key in FUSED_REQUIRED_FIELDS:
+                if key not in d or d[key] in (None, "", []):
+                    errors.append(f"{rel}: 缺必填字段 {key}")
+            if not re.fullmatch(r"(gk|gn|wg|hg|cz|jr|tj)-\d{3}", pid):
+                errors.append(f"{rel}: id 格式非法（应为 {'|'.join(FUSED_PREFIX)}-三位数字）: {pid}")
+            if d.get("subject") not in SUBJECTS:
+                errors.append(f"{rel}: subject 应为 {'/'.join(SUBJECTS)}: {d.get('subject')}")
+            if not isinstance(d.get("sources"), list) or not d.get("sources"):
+                errors.append(f"{rel}: sources 应为非空列表")
+            continue
+        if d["kind"] == "auto":
             for key in AUTO_REQUIRED_FIELDS:
                 if key not in d or d[key] in (None, "", []):
                     errors.append(f"{rel}: 缺必填字段 {key}")
@@ -91,7 +107,7 @@ def run_checks() -> tuple:
             errors.append(f"id 重复 {n} 次: {pid} — {owners}")
     idset = set(ids)
     for rel, d in points:
-        if d.get("kind") == "auto":
+        if d.get("kind") in ("auto", "fused"):
             continue
         for rid in d.get("related", []) or []:
             if rid not in idset:
@@ -147,13 +163,17 @@ def main() -> None:
     errors, warnings, points, files = run_checks()
     crafted = [(r, d) for r, d in points if d.get("kind") == "crafted"]
     auto = [(r, d) for r, d in points if d.get("kind") == "auto"]
+    fused = [(r, d) for r, d in points if d.get("kind") == "fused"]
     by_chapter = Counter(str(d.get("chapter", "?")) for _, d in crafted)
-    print(f"知识点文件: {len(files)} 个（精写 {len(crafted)} + 讲义 {len(auto)}）")
+    print(f"知识点文件: {len(files)} 个（精写 {len(crafted)} + 讲义 {len(auto)} + 融合 {len(fused)}）")
     for ch in CHAPTER_PREFIX:
         print(f"  {ch}: {by_chapter.get(ch, 0)}")
     by_book = Counter(str(d.get("book", "?")) for _, d in auto)
     for book, n in by_book.items():
         print(f"  讲义·{book}: {n}")
+    by_part = Counter(str(d.get("part", "?")) for _, d in fused)
+    for part, n in by_part.items():
+        print(f"  融合·{part}: {n}")
     print(f"总计: {len(points)} 个知识点")
     for w in warnings:
         print(f"[警告] {w}")

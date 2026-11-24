@@ -1,0 +1,13 @@
+id: tj-003
+kind: fused
+subject: 经济学
+part: 第三篇统计学
+chapter: 第二章统计数据调查与整理
+section: ""
+node: 一、统计数据的概念及分类
+title: 统计数据的概念及分类
+content: |
+  - **统计数据的概念**
+  - **统计数据的分类**
+sources:
+  - 官方大纲 2023-08

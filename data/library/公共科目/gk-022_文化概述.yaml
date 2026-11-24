@@ -1,0 +1,16 @@
+id: gk-022
+kind: fused
+subject: 公共科目
+part: 第一部分基本知识
+chapter: 第二章人文与社会
+section: 第二节文化常识
+node: 一、文化概述
+title: 文化概述
+content: |
+  - 文化的特征与功能
+  - 文化与文明的关系
+  - 文化的民族性和世界性
+  - 文化的传承和创新
+  - 文化与民族精神
+sources:
+  - 官方大纲 2023-08

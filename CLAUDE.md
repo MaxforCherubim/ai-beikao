@@ -9,7 +9,9 @@
 
 两类知识点内容：
 - **精写知识点**（经济法 89 个，`data/points/`）：六件套——① 法条原文 → ② 为什么这么写 → ③ 名词由来 → ④ 生活案例 → ⑤ 考点提示 → ⑥ 练一练。目标：通过"完全理解"学透，而不是死记法条。
-- **讲义速览**（`data/library/`，kind: auto）：备考讲义 PDF 自动结构化/读图转写，正文即讲义原文（含解释与例题），标注来源页码。
+- **融合知识点**（`data/library/`，kind: fused）：以**官方大纲测查点**为单位，把多本讲义（文字版管线提取 + 图版读图转写的碎片）去重融合而成；应用内以自绘 SVG 思维导图为主视图（`core/tree_svg.py`），文字版折叠备查，sources 标注各书页码。
+
+导航骨架 = 官方大纲（`data/outline_official.json`，subjects → parts → chapters → 测查点），不用讲义自带章节。
 
 备考策略（2026-11-24 定）：**以做题为重**——刷题用 `data/题库/` 的 PDF 在 reMarkable 上做，应用内不做在线刷题；考点复习优先级降低。
 
@@ -32,24 +34,27 @@ AI备考辅助学习/
 ├── app.py                     # Streamlit 入口（唯一）
 ├── core/
 │   ├── data.py                # 加载 points/ + library/ + outline.json，内存缓存
+│   ├── tree_svg.py            # 知识点内容树 → 横向思维导图 SVG（纯标准库）
 │   ├── search.py              # jieba 分词检索（备用，无 UI）
 │   ├── progress.py            # 学习进度读写 .progress.考生.json
 │   ├── notes.py               # 笔记读写 .notes.考生.json
 │   └── ai.py                  # 可选 AI 追问（备用，无 UI）
 ├── tools/
 │   ├── extract_syllabus.py    # 官方 PDF → 提取文本（--save 存 data/raw/）
-│   ├── build_library.py       # 文字版讲义 PDF → data/library/（3 本配置化切分）
+│   ├── extract_official_outline.py  # 官方大纲 txt → data/outline_official.json（导航/融合唯一骨架）
+│   ├── build_library.py       # 文字版讲义 PDF → 碎片 YAML（融合的中间步骤，融合完删碎片）
 │   ├── organize_data.py       # data/ 资料整理映射（移动+重命名+登记表，可重跑）
-│   ├── build_outline.py       # 汇总 points/+library/ → data/outline.json（subjects 两层）
-│   ├── verify_points.py       # 双 schema 校验（精写 11 必填 / auto 8 必填）
+│   ├── build_outline.py       # 官方骨架挂点 → data/outline.json v3（subjects→parts→chapters）
+│   ├── verify_points.py       # 三 schema 校验（精写 11 必填 / fused 8 必填 / auto 8 必填）
 │   └── normalize_points.py    # 精写正文规范化（引号/空格/段落）
 ├── data/
 │   ├── raw/                   # ★ 官方原始资料区：只读、只增不删，见其 README.md
-│   ├── outline.json           # 大纲树 v2（subjects→chapters→sections→points，脚本生成）
+│   ├── outline_official.json  # 官方大纲树（extract_official_outline.py 生成，勿手改）
+│   ├── outline.json           # 应用大纲树 v3（官方骨架+挂点，build_outline.py 生成）
 │   ├── points/                # 精写知识点 YAML（经济法 6 章子目录，89 个）
-│   ├── library/               # 讲义结构化 YAML（<科目>/<书>/，脚本或读图转写生成）
-│   │   ├── 公共科目/基本知识非法学|法律国防和军队|岗位能力/
-│   │   └── 经济学/笔试考点集锦|财经必背考点|金融学必背考点|专业教材思维导图|基础框架思维导图/
+│   ├── library/               # 融合知识点 YAML（每官方测查点一个文件）
+│   │   ├── 公共科目/          # gk-（基本知识）gn-（岗位能力）
+│   │   └── 经济学/            # wg-微观 hg-宏观 cz-财政 jr-金融 tj-统计（经济法=精写，不融合）
 │   ├── 知识点/                # 教材讲义 PDF 原件（8 本，仅本地；README 登记表）
 │   └── 题库/                  # 题库 PDF（年份/真题|模拟题 分级；综合/ 无年份；综合/备用/ 重复来源）
 ├── static/fonts/              # 自托管字体切片（仅本地，gitignore）
@@ -100,27 +105,30 @@ related: [wq-014, wq-016]   # 内部关联 id
 - 章前缀约定：`dl`=导论 `wq`=物权法 `zbtb`=招标投标法 `ht`=合同法 `pj`=票据法 `zscq`=知识产权法
 - 序号章内连续，插入新知识点用未占用号，不重排已有 id（id 是进度记录和 related 的锚）
 
-### 4.2 讲义速览（data/library/**/*.yaml）— auto
+### 4.2 融合知识点（data/library/**/*.yaml）— fused
 
 ```yaml
-id: kd-003                  # 书前缀 + 三位序号：ff 非法学 fl 法律国防 gw 岗位能力
-kind: auto                  # js 经济思维导图 jc 基础框架 kd 考点集锦 cb 财经必背 jb 金融学必背
+id: wg-005                  # 域前缀 + 三位序号：gk 基本知识 gn 岗位能力 wg 微观 hg 宏观
+kind: fused                 # cz 财政 jr 金融 tj 统计（经济法不融合，用精写）
 subject: 经济学              # 公共科目 | 经济学
-book: 经济学-笔试考点集锦     # 来源书（data/知识点/ 下的文件名）
-chapter: 第一部分经济学篇     # 书签/篇章节层级
-section: 考点一：市场均衡及应用
-title: 考点一：市场均衡及应用 · 二、供求定理
-content: |                  # 讲义原文 markdown：结构行加粗列表项，正文挂其子项；★重点保留
-  - **二、供求定理**
-    - **（一）供求定理**
-      - 供求定理：其他条件不变的情况下，……
-source: 经济学-笔试考点集锦.pdf p.3-4   # 来源页码（PDF 页）
+part: 第一篇微观经济学       # 官方大纲 part 名（逐字）
+chapter: 第二章均衡价格理论   # 官方大纲章名（逐字，无空格）
+section: ""                 # 官方节名（公共科目基本知识有节；其余留空）
+node: 二、供给               # 官方测查点名（逐字）；章级单元填章名
+title: 供给                  # = node 去「一、」前缀
+content: |                  # 融合后的内容树（嵌套列表），应用渲染为思维导图
+  - **供给**
+    - **供给的概念及影响因素**
+      - 主体：生产者
+sources:                    # 融合用到的来源（书+页码，或「官方大纲 2023-08」）
+  - 经济学-专业教材.pdf p.5
 ```
 
 硬性要求：
-- 内容**忠实于源讲义**，不许编造；图版书读图转写时看不清写（原图不清）
-- 一个"有实质内容的最小标题"= 一个 YAML；不足 3 行的小标题并入父知识点
-- 思维导图层级用嵌套列表表达；★重点、口诀、数字、公式逐字保留
+- 一个**官方测查点** = 一个 YAML（outline_official.json 的 node；无 node 的章按章级单元）
+- 内容只许来自讲义碎片与官方大纲，不许编造；多书重复取信息量最大表述，互补子点取并集
+- ★重点、口诀、数字、公式逐字保留；原文截断/不清处标注（原文转写不全）等，不补写
+- 碎片未覆盖的官方子主题用大纲分号子主题兜底作骨架，sources 加「官方大纲 2023-08」
 
 ### 4.3 正文排版规范（两种 schema 通用，Markdown 渲染约束）
 
@@ -148,7 +156,10 @@ source: 经济学-笔试考点集锦.pdf p.3-4   # 来源页码（PDF 页）
 ## 6. 工作流命令
 
 ```bash
-# 讲义结构化（新增文字版讲义时；图版书走读图转写，直接写 YAML）
+# 官方大纲骨架（大纲更新时）
+python tools/extract_official_outline.py
+
+# 讲义碎片提取（新增文字版讲义时；图版书读图转写；碎片融合进 library 后删除）
 python tools/build_library.py
 
 # 正文规范化（精写知识点新增/修改后先跑）
@@ -187,6 +198,14 @@ python tools/extract_syllabus.py "data/raw/<文件>.pdf" --save
 - 本项目为本地数据型应用（YAML + Streamlit），Bash/文件工具已覆盖全部操作，**现阶段不建 MCP**
 
 ## 9. 迭代日志（每次改动追加一条，新条目在最上）
+
+### 2026-11-24 v2.1 官方大纲骨架 + 讲义融合 + 思维导图渲染（用户 4 条反馈）
+- 删会计学内容（27 点，源自《财经必背考点》书，不在考纲）；删经济法重复碎片 32 个（精写 89 点即最优版）
+- 导航改官方大纲树：tools/extract_official_outline.py 从大纲 txt 提取 outline_official.json（公共 8 章 42 测查点 + 岗位能力 4 章；经济学 6 篇 40 章 136 测查点）；侧栏/进度表/导航全挂官方树
+- 讲义融合：以官方测查点为单位合并多书碎片（156 个 fused 点：gk46/gn4/wg24/hg20/cz18/jr21/tj23），去重取 richest、互补取并集、★/公式/口诀逐字保留、无碎片节点用大纲子主题兜底；碎片目录与 tmp 脚手架已删，data/library 只留 公共科目/经济学 两目录
+- 思维导图渲染：core/tree_svg.py（纯标准库 SVG 横向树，多根森林、超宽横滚、继承页面字体）；fused 页 = 导图主视图 + 折叠文字版 + sources 页码
+- 坑：官方大纲提取文本标题无空格（第二章物权法）而 YAML 带空格——build_outline 比较前 norm() 去空格；岗位能力章官方无「一、」节点，按章级单元融合
+- 总计 245 点（精写 89 + 融合 156），2 科目 48 章，校验全过；v2.0 已推送 GitHub（81f572d）
 
 ### 2026-11-24 v2.0 全科目大改（去图解 + 资料整理 + 讲义入库）
 - 定位升级：经济法助手 → 军队文职全科备考助手（公共科目 + 经济学）；备考策略改为做题为重（reMarkable 刷 PDF，应用不做在线刷题）

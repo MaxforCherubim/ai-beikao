@@ -1,0 +1,13 @@
+id: gk-037
+kind: fused
+subject: 公共科目
+part: 第一部分基本知识
+chapter: 第二章人文与社会
+section: 第五节科学技术
+node: 三、军事高科技
+title: 军事高科技
+content: |
+  - 军事技术的演变
+  - 高技术在军事领域的运用
+sources:
+  - 官方大纲 2023-08
