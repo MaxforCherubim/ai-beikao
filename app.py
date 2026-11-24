@@ -31,17 +31,12 @@ DIAGRAMS = {
 }
 
 
-@st.cache_data
-def _diagram_bytes(filename: str) -> bytes:
-    return (ROOT / "static" / "diagrams" / filename).read_bytes()
-
-
 def render_diagram(filename: str, caption: str) -> None:
-    with st.expander(f"🗺️ {caption}", expanded=True):
-        st.image(_diagram_bytes(filename), width="stretch")
+    with st.expander(f"🗺️ {caption}（点图可新标签放大）", expanded=True):
         st.markdown(
-            f'<a href="/app/static/diagrams/{filename}" target="_blank" '
-            f'rel="noreferrer">🔍 在新标签打开大图（浏览器原生缩放/拖动，看细节用这个）</a>',
+            f'<a href="/app/static/diagrams/{filename}" target="_blank" rel="noreferrer">'
+            f'<img src="/app/static/diagrams/{filename}" alt="{caption}" '
+            f'style="width:100%;display:block;cursor:zoom-in;border-radius:8px;"></a>',
             unsafe_allow_html=True,
         )
 
@@ -369,11 +364,11 @@ def welcome() -> None:
     )
 
     st.markdown("---")
-    with st.expander("🗺️ 经济法知识体系全景", expanded=True):
-        st.image(_diagram_bytes("knowledge-tree.png"), width="stretch")
+    with st.expander("🗺️ 经济法知识体系全景（点开查看；点图可新标签放大）", expanded=False):
         st.markdown(
-            '<a href="/app/static/diagrams/knowledge-tree.png" target="_blank" '
-            'rel="noreferrer">🔍 在新标签打开大图（浏览器原生缩放/拖动）</a>',
+            '<a href="/app/static/diagrams/knowledge-tree.png" target="_blank" rel="noreferrer">'
+            '<img src="/app/static/diagrams/knowledge-tree.png" alt="经济法知识体系全景" '
+            'style="width:100%;display:block;cursor:zoom-in;border-radius:8px;"></a>',
             unsafe_allow_html=True,
         )
 

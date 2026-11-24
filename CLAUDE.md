@@ -155,6 +155,13 @@ python tools/extract_syllabus.py "data/raw/<文件>.pdf" --save
 
 ## 9. 迭代日志（每次改动追加一条，新条目在最上）
 
+### 2026-11-24 v1.9 图解交互定稿 + 界面精简 + 云端公开生效
+- 图解最终方案：框内 st.image 适应宽度（大小图观感统一）+ 图下「新标签打开大图」链接（浏览器原生缩放看细节）。
+  曾尝试 st.html 内嵌自写 pan/zoom JS 查看器，初始适配在沙箱 iframe 里不可靠，弃用
+- 移除每页底部「问 AI」面板（core/ai.py 模块保留备用）；侧栏顶部加「🏠 首页」按钮；「数据依据」说明从侧栏移到首页
+- 云端公开已生效：匿名浏览器实测首页完整渲染（curl 无 cookie 首跳 303 属正常，不代表未公开）
+- 本地 cloudflared 临时隧道已停止（云端为唯一入口）；如需临时本地分享用 .tools-bin/cloudflared/启动分享.bat
+
 ### 2026-11-24 v1.8 图解改静态 PNG（用户反馈：不需要交互、加载慢）
 - 交互版 HTML（0.9MB/张）→ archify export-svg → Chrome 无头 2x 截 PNG（60~304KB/张）
 - 嵌入方式 st.iframe → st.image（@st.cache_data 读仓库字节），不依赖云端 /app/static 路由
