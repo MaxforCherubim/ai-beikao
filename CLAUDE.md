@@ -155,6 +155,13 @@ python tools/extract_syllabus.py "data/raw/<文件>.pdf" --save
 
 ## 9. 迭代日志（每次改动追加一条，新条目在最上）
 
+### 2026-11-23 v1.7 archify 交互式图解（4 张）
+- 工具：archify skill 3.3 装于 ~/.zcode/skills/archify（全局仅留 ZCode 一份；CLI 需 TTY，用 PowerShell Start-Process 跑 finalize；输出 candidate 放 .archify/，已 gitignore）
+- 四张图（static/diagrams/，archify validate/deliver/check/browser-check 全过）：
+  knowledge-tree（tree，六章30节全景，首页）/ bidding-workflow（workflow 三泳道，zbtb-001）/ contract-lifecycle（lifecycle 合同一生，ht-001）/ note-sequence（票据流转追索，pj-001）
+- 集成：st.iframe("/app/static/diagrams/xxx") 嵌入 expander（旧 st.components.v1.iframe 2026-06 移除）；DIAGRAMS 映射在 app.py
+- archify 经验：workflow v1 同泳道相邻列节点固定列距 70px，宽节点必撞 column-capacity——跨泳道隔列排布、每格≤1节点；nodeIcon 仅白名单（calendar/clock/person/briefcase/flag/moon+组件语义图标）；长流程 meta.viewBox 调宽高比解决纵向 viewport-overflow；lifecycle schema_version=3
+
 ### 2026-11-23 v1.6 侧栏精简 + 缩进误伤修复（用户截图反馈）
 - 移除侧栏搜索框（用户明确不需要；检索模块 core/search.py 保留，AI 追问仍用其分词）
 - 修复首行缩进 2em 漏进列表/折叠框/按钮的问题：根因是 `div[data-testid="stMarkdownContainer"] p` 特异性（0,1,2）高于 `li p/summary p`（0,0,2），排除规则失效；改用 `li p, summary *, .stButton p, .stRadio p, .stCheckbox p { text-indent:0 !important }`

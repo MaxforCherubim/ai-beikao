@@ -23,3 +23,8 @@ Thumbs.db
 
 # archify 构建中间产物
 .archify/
+
+# 图解的交互版/矢量版与构建证据只留本地，云端只用 PNG
+static/diagrams/*.html
+static/diagrams/*.svg
+static/diagrams/*.json
