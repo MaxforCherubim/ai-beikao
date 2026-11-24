@@ -155,6 +155,13 @@ python tools/extract_syllabus.py "data/raw/<文件>.pdf" --save
 
 ## 9. 迭代日志（每次改动追加一条，新条目在最上）
 
+### 2026-11-24 v1.8 图解改静态 PNG（用户反馈：不需要交互、加载慢）
+- 交互版 HTML（0.9MB/张）→ archify export-svg → Chrome 无头 2x 截 PNG（60~304KB/张）
+- 嵌入方式 st.iframe → st.image（@st.cache_data 读仓库字节），不依赖云端 /app/static 路由
+  （该路由在应用未公开时会陷入登录 303 重定向死循环，表现为"图解里套了一个 Streamlit"）
+- 仓库瘦身：static/diagrams 下 *.html/*.svg/*.json 只留本地（gitignore），云端仅 PNG
+- st.image 用 width='stretch'（use_container_width 已弃用 2025-12-31 移除）
+
 ### 2026-11-23 v1.7 archify 交互式图解（4 张）
 - 工具：archify skill 3.3 装于 ~/.zcode/skills/archify（全局仅留 ZCode 一份；CLI 需 TTY，用 PowerShell Start-Process 跑 finalize；输出 candidate 放 .archify/，已 gitignore）
 - 四张图（static/diagrams/，archify validate/deliver/check/browser-check 全过）：

@@ -12,7 +12,6 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parent
 
-from core import ai as aimod
 from core import data as dmod
 from core import notes as nmod
 from core import progress as pmod
@@ -39,7 +38,12 @@ def _diagram_bytes(filename: str) -> bytes:
 
 def render_diagram(filename: str, caption: str) -> None:
     with st.expander(f"🗺️ {caption}", expanded=True):
-        st.image(_diagram_bytes(filename), width='stretch')
+        st.image(_diagram_bytes(filename), width="stretch")
+        st.markdown(
+            f'<a href="/app/static/diagrams/{filename}" target="_blank" '
+            f'rel="noreferrer">🔍 在新标签打开大图（浏览器原生缩放/拖动，看细节用这个）</a>',
+            unsafe_allow_html=True,
+        )
 
 
 # ---------- 渲染辅助 ----------
@@ -218,6 +222,10 @@ def sidebar() -> None:
         m, r = len(prog["mastered"]), len(prog["review"])
         st.caption(f"已掌握 {m}/{total} · 待复习 {r}")
 
+        if st.button("🏠 首页（总览 · 知识体系图）", key="home", use_container_width=True):
+            st.query_params.clear()
+            st.rerun()
+
         outline = dmod.load_outline()
         for ch in outline["chapters"]:
             with st.expander(f"{ch['title']}（{ch['count']}）"):
@@ -236,7 +244,6 @@ def sidebar() -> None:
         if st.button("🔄 重新加载数据（改了 YAML 后点这里）"):
             dmod.clear_cache()
             st.rerun()
-        st.caption("数据依据：官方《经济学》科目考试大纲 · data/raw/")
         st.caption("由 [MaxforCherubim](https://github.com/MaxforCherubim) 制作 · 基于 [Streamlit](https://streamlit.io) 构建")
 
 
@@ -308,32 +315,8 @@ def render_point(pid: str) -> None:
             st.rerun()
         st.caption("学习法：先理解 💡 → 看案例 🌏 → 做题 📝 → 有空再读原文 📜")
 
-        render_ai_panel(p)
-
     with right:
         render_notes(pid)
-
-
-def render_ai_panel(p: dict) -> None:
-    with st.expander("🤖 问 AI（可选，需配置智谱 Key）"):
-        if not aimod.get_api_key():
-            st.info(
-                "配置后可针对本知识点继续追问。二选一：\n"
-                "① 环境变量 `ZHIPUAI_API_KEY`；\n"
-                "② 项目下建 `.streamlit/secrets.toml` 写入 `ZHIPUAI_API_KEY = \"...\"`"
-            )
-            return
-        q = st.text_area("你的问题", key=f"aiq-{p['id']}", height=80,
-                         placeholder="例如：抵押和质押我总是分不清，再讲讲？")
-        if st.button("发送", key=f"ais-{p['id']}"):
-            if not q.strip():
-                st.warning("先输入问题")
-            else:
-                with st.spinner("AI 思考中…"):
-                    try:
-                        st.markdown(aimod.ask(q.strip(), p))
-                    except Exception as e:  # noqa: BLE001
-                        st.error(f"调用失败：{e}")
 
 
 # ---------- 首页 ----------
@@ -350,15 +333,15 @@ def welcome() -> None:
 
     st.markdown(
         """
-**怎么用**：左侧点大纲树或搜索关键词进入知识点。每个知识点这样学：
+**怎么用**：左侧点「🏠 首页」回到本页，点各章大纲进入知识点。每个知识点这样学：
 💡 为什么这么写（分点讲透）→ 🏷️ 名词由来 → 🌏 生活案例 → ⚡ 考点提示 → 📝 练一练；
 吃不准时再展开 📜 法条原文 回看原文。学完点 ✅ 已掌握（吃不准的点 🔁 待复习），
-重要内容写进右栏笔记。
+重要内容写进右栏笔记。图解支持滚轮放大、按住拖动。
 
 **范围**：官方《经济学》科目考试大纲「经济学类基础综合」第三篇 经济法，共 6 章。
-原始 PDF 与提取文本在 `data/raw/`，可随时核对。
 """
     )
+    st.caption("数据依据：官方《经济学》科目考试大纲（2023-08，军队人才网）· 原始 PDF 与提取文本见本地 data/raw/")
 
     st.markdown("### 各章进度")
     rows = ["| 章 | 知识点 | 已掌握 | 待复习 |", "|---|---|---|---|"]
@@ -387,7 +370,12 @@ def welcome() -> None:
 
     st.markdown("---")
     with st.expander("🗺️ 经济法知识体系全景", expanded=True):
-        st.image(_diagram_bytes("knowledge-tree.png"), width='stretch')
+        st.image(_diagram_bytes("knowledge-tree.png"), width="stretch")
+        st.markdown(
+            '<a href="/app/static/diagrams/knowledge-tree.png" target="_blank" '
+            'rel="noreferrer">🔍 在新标签打开大图（浏览器原生缩放/拖动）</a>',
+            unsafe_allow_html=True,
+        )
 
     st.caption("由 [MaxforCherubim](https://github.com/MaxforCherubim) 制作 · 本应用基于 [Streamlit](https://streamlit.io) 构建")
 
