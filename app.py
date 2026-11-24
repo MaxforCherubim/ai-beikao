@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""军队文职备考·经济法学习助手（Streamlit）。
+"""军队文职备考助手（Streamlit）：公共科目 + 经济学全科目。
 
 启动: python -m streamlit run app.py
-数据: data/points/*.yaml（规范见 CLAUDE.md §4），大纲树 data/outline.json 由脚本生成。
+数据: data/points/*.yaml（精写六件套）+ data/library/**/*.yaml（讲义自动结构化），
+大纲树 data/outline.json 由 tools/build_outline.py 生成（subjects → chapters → sections）。
 """
 import re
 from datetime import date
@@ -15,30 +16,11 @@ ROOT = Path(__file__).resolve().parent
 from core import data as dmod
 from core import notes as nmod
 from core import progress as pmod
-from core import search as smod
 
-st.set_page_config(page_title="经济法备考助手", page_icon="⚖️", layout="wide")
+st.set_page_config(page_title="军队文职备考助手", page_icon="🎖️", layout="wide")
 
 EXAM_DATE = date(2026, 12, 13)
 USER = "考生"  # 单一身份：本地与云端访客共用同一套笔记/进度
-
-# archify 导出的静态图解（SVG）：知识点 id → (文件, 说明)
-# 用图片而非交互式 HTML：体积小 4~5 倍、秒开、不依赖云端静态路由
-DIAGRAMS = {
-    "zbtb-001": ("bidding-workflow.png", "本章导览：招标投标全流程"),
-    "ht-001": ("contract-lifecycle.png", "本章导览：合同的一生"),
-    "pj-001": ("note-sequence.png", "本章导览：票据流转与追索"),
-}
-
-
-def render_diagram(filename: str, caption: str) -> None:
-    with st.expander(f"🗺️ {caption}（点图可新标签放大）", expanded=True):
-        st.markdown(
-            f'<a href="/app/static/diagrams/{filename}" target="_blank" rel="noreferrer">'
-            f'<img src="/app/static/diagrams/{filename}" alt="{caption}" '
-            f'style="width:100%;display:block;cursor:zoom-in;border-radius:8px;"></a>',
-            unsafe_allow_html=True,
-        )
 
 
 # ---------- 渲染辅助 ----------
@@ -50,12 +32,12 @@ def quote_block(text: str) -> str:
 # 中文首行缩进：用 CSS text-indent 实现（每段自动缩进 2 字符）。
 # 不能用全角空格字符方案——Streamlit 会 strip 整个 markdown 字符串开头的空白，
 # 段首缩进恰好位于字符串开头时会失效。
-# 字体：ZeoSeven CDN（国内直连可用，unicode-range 切片按需加载，不进仓库）。
+# 字体：本地自托管（static/fonts，切片自 ZeoSeven，开源可商用，不进 git 仓库）。
 #   #69 思源黑体=正文阅读清晰；#92 得意黑=标题精神；#292 霞鹜文楷=法条文书感。
-#   CDN 失效时自动回退到系统字体（微软雅黑/苹方），不影响使用。
+#   字体文件缺失时自动回退到系统字体（微软雅黑/苹方），不影响使用。
 def _load_font_css() -> str:
-    """本地自托管字体（static/fonts，由 tools 下载自 ZeoSeven）：用 link 引用，
-    不内联——三个 result.css 合计 50 万+字符，内联会被 Streamlit HTML 渲染截断。"""
+    """本地自托管字体：用 link 引用，不内联——三个 result.css 合计 50 万+字符，
+    内联会被 Streamlit HTML 渲染截断。"""
     links = []
     for fid in ("69", "92", "292"):
         if (ROOT / "static" / "fonts" / fid / "result.css").exists():
@@ -210,31 +192,33 @@ def render_notes(pid: str) -> None:
 
 def sidebar() -> None:
     with st.sidebar:
-        st.markdown(f"### ⚖️ 经济法备考助手")
+        st.markdown("### 🎖️ 军队文职备考助手")
 
         prog = pmod.load(USER)
         total = len(dmod.load_points())
         m, r = len(prog["mastered"]), len(prog["review"])
         st.caption(f"已掌握 {m}/{total} · 待复习 {r}")
 
-        if st.button("🏠 首页（总览 · 知识体系图）", key="home", use_container_width=True):
+        if st.button("🏠 首页", key="home", use_container_width=True):
             st.query_params.clear()
             st.rerun()
 
         outline = dmod.load_outline()
-        for ch in outline["chapters"]:
-            with st.expander(f"{ch['title']}（{ch['count']}）"):
-                for sec in ch["sections"]:
-                    st.caption(f"**{sec['title']}**")
-                    for pid in sec["points"]:
-                        p = dmod.get_point(pid)
-                        if st.button(
-                            f"{p['title']}　{status_badge(USER, pid)}{_note_mark(USER, pid)}",
-                            key=f"tree-{pid}",
-                            use_container_width=True,
-                        ):
-                            st.query_params["p"] = pid
-                            st.rerun()
+        for subj in outline["subjects"]:
+            st.markdown(f"#### {subj['title']}（{subj['count']}）")
+            for ch in subj["chapters"]:
+                with st.expander(f"{_short_chapter(ch['title'])}（{ch['count']}）"):
+                    for sec in ch["sections"]:
+                        st.caption(f"**{sec['title']}**")
+                        for pid in sec["points"]:
+                            p = dmod.get_point(pid)
+                            if st.button(
+                                f"{p['title']}　{status_badge(USER, pid)}{_note_mark(USER, pid)}",
+                                key=f"tree-{pid}",
+                                use_container_width=True,
+                            ):
+                                st.query_params["p"] = pid
+                                st.rerun()
 
         if st.button("🔄 重新加载数据（改了 YAML 后点这里）"):
             dmod.clear_cache()
@@ -251,39 +235,41 @@ def render_point(pid: str) -> None:
     left, right = st.columns([0.72, 0.28], gap="large")
 
     with left:
-        st.caption(f"{_short_chapter(p['chapter'])} › {_short_section(p['section'])}")
+        st.caption(f"{p['subject']} › {_short_chapter(p['chapter'])} › {_short_section(p['section'])}")
         st.title(f"{p['title']}　{status_badge(USER, pid)}")
 
-        if pid in DIAGRAMS:
-            render_diagram(*DIAGRAMS[pid])
+        if p.get("kind") == "auto":
+            # 讲义速览：正文即讲义原文（含解释与例题），忠于源 PDF
+            st.markdown(p.get("content", ""))
+            st.caption(f"📖 讲义原文：{p.get('source', '')}（完整排版见 data/知识点/ 对应 PDF）")
+        else:
+            with st.expander("📜 法条原文（先理解逻辑，再回看原文；赶进度可跳过）", expanded=False):
+                st.markdown(quote_block(p["original"]))
 
-        with st.expander("📜 法条原文（先理解逻辑，再回看原文；赶进度可跳过）", expanded=False):
-            st.markdown(quote_block(p["original"]))
+            st.markdown("#### 💡 为什么这么写")
+            st.markdown(p.get("why_written", ""))
 
-        st.markdown("#### 💡 为什么这么写")
-        st.markdown(p.get("why_written", ""))
+            name_origin = p.get("name_origin")
+            if name_origin:
+                st.markdown("#### 🏷️ 名词由来")
+                st.markdown(name_origin)
 
-        name_origin = p.get("name_origin")
-        if name_origin:
-            st.markdown("#### 🏷️ 名词由来")
-            st.markdown(name_origin)
+            examples = p.get("examples") or []
+            if examples:
+                st.markdown("#### 🌏 生活中的案例")
+                for i, e in enumerate(examples, 1):
+                    with st.expander(f"案例{i}：{e['title']}", expanded=len(examples) <= 2):
+                        st.markdown(f"**场景**：{e['story']}")
+                        st.markdown(f"**分析**：{e['analysis']}")
 
-        examples = p.get("examples") or []
-        if examples:
-            st.markdown("#### 🌏 生活中的案例")
-            for i, e in enumerate(examples, 1):
-                with st.expander(f"案例{i}：{e['title']}", expanded=len(examples) <= 2):
-                    st.markdown(f"**场景**：{e['story']}")
-                    st.markdown(f"**分析**：{e['analysis']}")
+            exam_tips = p.get("exam_tips")
+            if exam_tips:
+                st.markdown("#### ⚡ 考点提示")
+                st.info(exam_tips)
 
-        exam_tips = p.get("exam_tips")
-        if exam_tips:
-            st.markdown("#### ⚡ 考点提示")
-            st.info(exam_tips)
-
-        if p.get("quiz"):
-            st.markdown("#### 📝 练一练")
-            render_quiz(p)
+            if p.get("quiz"):
+                st.markdown("#### 📝 练一练")
+                render_quiz(p)
 
         st.markdown("---")
         b1, b2, _sp = st.columns([1, 1, 4])
@@ -308,7 +294,10 @@ def render_point(pid: str) -> None:
                                  use_container_width=True):
             st.query_params["p"] = next_id
             st.rerun()
-        st.caption("学习法：先理解 💡 → 看案例 🌏 → 做题 📝 → 有空再读原文 📜")
+        if p.get("kind") == "auto":
+            st.caption("学习法：读讲义 📖 → 刷题库 PDF（data/题库/）→ 笔记 🗒️")
+        else:
+            st.caption("学习法：先理解 💡 → 看案例 🌏 → 做题 📝 → 有空再读原文 📜")
 
     with right:
         render_notes(pid)
@@ -318,7 +307,7 @@ def render_point(pid: str) -> None:
 
 def welcome() -> None:
     outline = dmod.load_outline()
-    st.title("⚖️ 经济法备考助手")
+    st.title("🎖️ 军队文职备考助手")
     days = (EXAM_DATE - date.today()).days
     c1, c2, c3 = st.columns(3)
     c1.metric("距考试", f"{days} 天")
@@ -328,28 +317,32 @@ def welcome() -> None:
 
     st.markdown(
         """
-**怎么用**：左侧点「🏠 首页」回到本页，点各章大纲进入知识点。每个知识点这样学：
-💡 为什么这么写（分点讲透）→ 🏷️ 名词由来 → 🌏 生活案例 → ⚡ 考点提示 → 📝 练一练；
-吃不准时再展开 📜 法条原文 回看原文。学完点 ✅ 已掌握（吃不准的点 🔁 待复习），
-重要内容写进右栏笔记。图解自动适应框宽，点图下链接可新标签放大看细节。
+**怎么用**：左侧按「科目 → 章 → 节」进入知识点，两类内容：
+精写知识点（经济法六件套：💡 为什么这么写 → 🏷️ 名词由来 → 🌏 案例 → ⚡ 考点提示 → 📝 练一练，
+吃不准再展开 📜 法条原文）；讲义速览（📖 公共科目与经济学讲义原文，含解释与例题）。
+学完点 ✅ 已掌握（吃不准的点 🔁 待复习），重要内容写进右栏笔记。
+刷题用 data/题库/ 下的 PDF（按年份分真题/模拟题），在 reMarkable 上做。
 
-**范围**：官方《经济学》科目考试大纲「经济学类基础综合」第三篇 经济法，共 6 章。
+**范围**：军队文职笔试全内容——公共科目（基本知识·法律国防和军队·岗位能力）+
+专业科目《经济学》（经济学/财政学/金融学/统计学/经济法）。
 """
     )
-    st.caption("数据依据：官方《经济学》科目考试大纲（2023-08，军队人才网）· 原始 PDF 与提取文本见本地 data/raw/")
+    st.caption("数据依据：官方考试大纲（2023-08，军队人才网）+ 备考讲义（data/知识点/，登记表见其 README）")
 
     st.markdown("### 各章进度")
-    rows = ["| 章 | 知识点 | 已掌握 | 待复习 |", "|---|---|---|---|"]
-    for ch in outline["chapters"]:
-        pids = [pid for sec in ch["sections"] for pid in sec["points"]]
-        rows.append(
-            f"| {ch['title']} | {len(pids)} "
-            f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'mastered')} "
-            f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'review')} |"
-        )
-    st.markdown("\n".join(rows), unsafe_allow_html=False)
+    for subj in outline["subjects"]:
+        st.markdown(f"**{subj['title']}**")
+        rows = ["| 章 | 知识点 | 已掌握 | 待复习 |", "|---|---|---|---|"]
+        for ch in subj["chapters"]:
+            pids = [pid for sec in ch["sections"] for pid in sec["points"]]
+            rows.append(
+                f"| {ch['title']} | {len(pids)} "
+                f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'mastered')} "
+                f"| {sum(1 for x in pids if pmod.status_of(USER, x) == 'review')} |"
+            )
+        st.markdown("\n".join(rows))
 
-    st.markdown("### 法条版本基准")
+    st.markdown("### 法条版本基准（经济法精写部分）")
     st.markdown(
         """
 | 法律 | 现行版本 | 说明 |
@@ -362,15 +355,6 @@ def welcome() -> None:
 | 《商标法》 | 2019 修正 | 2019-11-01 施行 |
 """
     )
-
-    st.markdown("---")
-    with st.expander("🗺️ 经济法知识体系全景（点开查看；点图可新标签放大）", expanded=False):
-        st.markdown(
-            '<a href="/app/static/diagrams/knowledge-tree.png" target="_blank" rel="noreferrer">'
-            '<img src="/app/static/diagrams/knowledge-tree.png" alt="经济法知识体系全景" '
-            'style="width:100%;display:block;cursor:zoom-in;border-radius:8px;"></a>',
-            unsafe_allow_html=True,
-        )
 
     st.caption("由 [MaxforCherubim](https://github.com/MaxforCherubim) 制作 · 本应用基于 [Streamlit](https://streamlit.io) 构建")
 

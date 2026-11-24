@@ -10,6 +10,14 @@ __pycache__/
 # ===== 官方版权资料（军委大纲 PDF 与提取文本，严禁上传任何云端）=====
 data/raw/
 
+# ===== 备考资料原件（教材/题库 PDF，体积大且有版权，只留本地）=====
+data/知识点/
+data/题库/
+data/**/*.pdf
+
+# ===== 自托管字体切片（约 40MB，只留本地；缺失时回退系统字体）=====
+static/fonts/
+
 # ===== 密钥（如以后配置）=====
 .streamlit/secrets.toml
 
@@ -21,10 +29,5 @@ Thumbs.db
 # 第三方 skill（从 streamlit 包复制，非项目内容）
 .zcode/skills/streamlit-app/
 
-# archify 构建中间产物
-.archify/
-
-# 图解的交互版/矢量版与构建证据只留本地，云端只用 PNG
-static/diagrams/*.html
-static/diagrams/*.svg
-static/diagrams/*.json
+# 会话计划产物
+.zcode/plans/

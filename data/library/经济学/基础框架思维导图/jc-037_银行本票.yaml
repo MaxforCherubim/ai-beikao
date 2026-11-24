@@ -1,0 +1,13 @@
+id: jc-037
+kind: auto
+subject: 经济学
+book: 经济学-基础框架
+chapter: 第二篇 经济法
+section: 5、票据法
+title: 银行本票
+keywords: [银行本票, 见票即付, 提示付款]
+content: |
+  - 付款
+    - 1.持票人向出票人提示付款；
+    - 2.本票为见票即付，提示付款最长不得超过2个月；
+source: 经济学-基础框架.pdf p.13

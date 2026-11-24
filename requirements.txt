@@ -3,3 +3,5 @@ streamlit==1.67.0
 pyyaml==6.0.3
 jieba==0.42.1
 requests==2.34.2
+# tools 侧（PDF 提取/讲义结构化，应用运行不需要）
+pymupdf==2.1.0

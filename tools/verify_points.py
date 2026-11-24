@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""知识点数据校验：必填字段、id 规则、related 引用、章名对齐、条号清单。
+"""知识点数据校验：精写六件套（data/points）与自动结构化讲义（data/library）双 schema。
 
 用法:
     python tools/verify_points.py                 # 全量校验，出错退出码 1
@@ -15,11 +15,13 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 POINTS_DIR = ROOT / "data" / "points"
+LIBRARY_DIR = ROOT / "data" / "library"
 
 REQUIRED_FIELDS = ["id", "chapter", "section", "title", "keywords",
                    "original", "why_written", "name_origin", "examples", "exam_tips", "quiz"]
+AUTO_REQUIRED_FIELDS = ["id", "subject", "book", "chapter", "section", "title", "content", "source"]
 
-# 官方大纲 6 章名 -> id 前缀
+# 官方大纲经济法 6 章名 -> id 前缀（精写知识点）
 CHAPTER_PREFIX = {
     "第一章 导论": "dl",
     "第二章 物权法": "wq",
@@ -28,6 +30,10 @@ CHAPTER_PREFIX = {
     "第五章 票据法": "pj",
     "第六章 知识产权法": "zscq",
 }
+
+# 自动结构化讲义的 id 前缀（book 目录 -> 前缀）
+AUTO_PREFIX = ("ff", "fl", "gw", "js", "jc", "kd", "cb", "jb")
+SUBJECTS = ("公共科目", "经济学")
 
 # 大纲节名 -> 排序序号（按官方大纲中"一、二、三…"顺序）
 CN_NUM = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10}
@@ -38,10 +44,11 @@ ARTICLE_RE = re.compile(r"《[^》]+》[^。；\n]{0,24}第[零一二三四五�
 def run_checks() -> tuple:
     """返回 (errors, warnings, points, files)。errors 非空则校验失败。"""
     errors, warnings = [], []
-    files = sorted(POINTS_DIR.rglob("*.yaml"))
+    files = sorted(POINTS_DIR.rglob("*.yaml")) + sorted(LIBRARY_DIR.rglob("*.yaml"))
     points = []
     for f in files:
         rel = f.relative_to(ROOT)
+        is_auto = LIBRARY_DIR in f.parents
         try:
             d = yaml.safe_load(f.read_text(encoding="utf-8"))
         except Exception as e:  # noqa: BLE001
@@ -50,13 +57,24 @@ def run_checks() -> tuple:
         if not isinstance(d, dict):
             errors.append(f"{rel}: 顶层不是映射")
             continue
+        d.setdefault("kind", "auto" if is_auto else "crafted")
+        if d["kind"] != ("auto" if is_auto else "crafted"):
+            errors.append(f"{rel}: kind 与所在目录不符（{d['kind']}）")
         points.append((rel, d))
-        # 必填字段
+        pid = str(d.get("id", ""))
+        if is_auto:
+            for key in AUTO_REQUIRED_FIELDS:
+                if key not in d or d[key] in (None, "", []):
+                    errors.append(f"{rel}: 缺必填字段 {key}")
+            if not re.fullmatch(r"(ff|fl|gw|js|jc|kd|cb|jb)-\d{3}", pid):
+                errors.append(f"{rel}: id 格式非法（应为 {'|'.join(AUTO_PREFIX)}-三位数字）: {pid}")
+            if d.get("subject") not in SUBJECTS:
+                errors.append(f"{rel}: subject 应为 {'/'.join(SUBJECTS)}: {d.get('subject')}")
+            continue
+        # ---- 精写六件套 ----
         for key in REQUIRED_FIELDS:
             if key not in d or d[key] in (None, "", []):
                 errors.append(f"{rel}: 缺必填字段 {key}")
-        # id 唯一性与前缀匹配
-        pid = str(d.get("id", ""))
         m = re.fullmatch(r"(dl|wq|zbtb|ht|pj|zscq)-\d{3}", pid)
         if not m:
             errors.append(f"{rel}: id 格式非法（应为 dl|wq|zbtb|ht|pj|zscq-三位数字）: {pid}")
@@ -65,7 +83,6 @@ def run_checks() -> tuple:
             errors.append(f"{rel}: chapter 不在官方大纲 6 章内: {d.get('chapter')}")
         elif prefix and pid and not pid.startswith(prefix):
             errors.append(f"{rel}: id 前缀与章不匹配（应为 {prefix}-xxx）: {pid}")
-        # related 引用存在性延后统一查
     # id 全局唯一
     ids = [str(d.get("id", "")) for _, d in points]
     for pid, n in Counter(ids).items():
@@ -74,6 +91,8 @@ def run_checks() -> tuple:
             errors.append(f"id 重复 {n} 次: {pid} — {owners}")
     idset = set(ids)
     for rel, d in points:
+        if d.get("kind") == "auto":
+            continue
         for rid in d.get("related", []) or []:
             if rid not in idset:
                 errors.append(f"{rel}: related 指向不存在的 id: {rid}")
@@ -126,10 +145,15 @@ def main() -> None:
     args = ap.parse_args()
 
     errors, warnings, points, files = run_checks()
-    by_chapter = Counter(str(d.get("chapter", "?")) for _, d in points)
-    print(f"知识点文件: {len(files)} 个")
+    crafted = [(r, d) for r, d in points if d.get("kind") == "crafted"]
+    auto = [(r, d) for r, d in points if d.get("kind") == "auto"]
+    by_chapter = Counter(str(d.get("chapter", "?")) for _, d in crafted)
+    print(f"知识点文件: {len(files)} 个（精写 {len(crafted)} + 讲义 {len(auto)}）")
     for ch in CHAPTER_PREFIX:
         print(f"  {ch}: {by_chapter.get(ch, 0)}")
+    by_book = Counter(str(d.get("book", "?")) for _, d in auto)
+    for book, n in by_book.items():
+        print(f"  讲义·{book}: {n}")
     print(f"总计: {len(points)} 个知识点")
     for w in warnings:
         print(f"[警告] {w}")
@@ -140,7 +164,7 @@ def main() -> None:
         sys.exit(1)
     print("\n✓ 校验通过")
     if args.list_articles:
-        list_articles(points)
+        list_articles(crafted)
 
 
 if __name__ == "__main__":

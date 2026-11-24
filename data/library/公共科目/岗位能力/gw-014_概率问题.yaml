@@ -1,0 +1,13 @@
+id: gw-014
+kind: auto
+subject: 公共科目
+book: 公共科目-岗位能力
+chapter: 第二章数量关系
+section: 第三节数量关系-数运常考题型
+title: 概率问题
+keywords: [概率问题, 古典概率, 独立重复试验, 样本数]
+content: |
+  - **概率问题**
+    - 古典概率公式：P=事件A发生的等可能样本数÷总事件的等可能样本数
+    - 多次独立重复试验：P（A）=C(n,m)·p^m·(1-p)^(n-m)
+source: 公共科目-岗位能力.pdf p.9

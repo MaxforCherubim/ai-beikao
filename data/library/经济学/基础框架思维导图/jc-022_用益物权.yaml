@@ -1,0 +1,16 @@
+id: jc-022
+kind: auto
+subject: 经济学
+book: 经济学-基础框架
+chapter: 第二篇 经济法
+section: 2、物权法律制度
+title: 用益物权
+keywords: [建设用地使用权, 宅基地使用权, 土地承包经营权, 地役权]
+content: |
+  - 建设用地使用权
+    - 创设取得
+    - 移转取得
+  - 宅基地使用权
+  - 土地承包经营权
+  - 地役权
+source: 经济学-基础框架.pdf p.9
